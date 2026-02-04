@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 
 export default function RegisterPage() {
+  const router = useRouter();
+
   const [form, setForm] = useState({
     full_name: "",
     matric_no: "",
@@ -15,6 +18,7 @@ export default function RegisterPage() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -24,6 +28,7 @@ export default function RegisterPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccess(null);
 
     // 1️⃣ Create auth user
     const { data, error: authError } = await supabase.auth.signUp({
@@ -41,53 +46,102 @@ export default function RegisterPage() {
     const { error: profileError } = await supabase.from("students").insert({
       id: data.user.id,
       full_name: form.full_name,
-      matric_no: form.matric_no,
+      matric_number: form.matric_no,
       department: form.department,
       level: form.level,
     });
 
     if (profileError) {
       setError(profileError.message);
+      setLoading(false);
+      return;
     }
 
+    setSuccess("Account created successfully! Redirecting...");
     setLoading(false);
+
+    setTimeout(() => router.push("/students"), 1500);
   };
 
   return (
-    <form onSubmit={handleRegister}>
-      <h1>Register</h1>
+    <div className="max-w-md mx-auto mt-10 p-6 border rounded-md shadow-md">
+      <h1 className="text-2xl font-bold mb-4">Register</h1>
 
-      <input name="full_name" placeholder="Full Name" onChange={handleChange} />
-      <input
-        name="matric_no"
-        placeholder="Matric Number"
-        onChange={handleChange}
-      />
-      <input
-        name="department"
-        placeholder="Department"
-        onChange={handleChange}
-      />
-      <input name="level" placeholder="Level" onChange={handleChange} />
+      {error && <p className="text-red-500 mb-2">{error}</p>}
+      {success && <p className="text-green-500 mb-2">{success}</p>}
 
-      <input
-        name="email"
-        type="email"
-        placeholder="Email"
-        onChange={handleChange}
-      />
-      <input
-        name="password"
-        type="password"
-        placeholder="Password"
-        onChange={handleChange}
-      />
+      <form onSubmit={handleRegister} className="space-y-4">
+        <input
+          name="full_name"
+          type="text"
+          placeholder="Full Name"
+          value={form.full_name}
+          onChange={handleChange}
+          required
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          name="matric_no"
+          type="text"
+          placeholder="Matric Number"
+          value={form.matric_no}
+          onChange={handleChange}
+          required
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          name="department"
+          type="text"
+          placeholder="Department"
+          value={form.department}
+          onChange={handleChange}
+          required
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          name="level"
+          type="text"
+          placeholder="Level (e.g., 100, 200)"
+          value={form.level}
+          onChange={handleChange}
+          required
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          name="email"
+          type="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={handleChange}
+          required
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={handleChange}
+          required
+          minLength={6}
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
 
-      <button disabled={loading}>
-        {loading ? "Creating account..." : "Register"}
-      </button>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
+        >
+          {loading ? "Creating account..." : "Register"}
+        </button>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
-    </form>
+        <p className="mt-4 text-center text-sm text-gray-600">
+          I already have an account?{" "}
+          <a href="/auth/login" className="text-blue-600 hover:underline">
+            Login here
+          </a>
+        </p>
+      </form>
+    </div>
   );
 }
