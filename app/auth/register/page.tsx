@@ -1,12 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 
 export default function RegisterPage() {
-  const router = useRouter();
-
   const [form, setForm] = useState({
     full_name: "",
     matric_no: "",
@@ -30,7 +27,8 @@ export default function RegisterPage() {
     setError(null);
     setSuccess(null);
 
-    // 1️⃣ Create auth user
+    const supabase = createClient();
+
     const { data, error: authError } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
@@ -42,7 +40,6 @@ export default function RegisterPage() {
       return;
     }
 
-    // 2️⃣ Create student profile
     const { error: profileError } = await supabase.from("students").insert({
       id: data.user.id,
       full_name: form.full_name,
@@ -57,10 +54,17 @@ export default function RegisterPage() {
       return;
     }
 
-    setSuccess("Account created successfully! Redirecting...");
-    setLoading(false);
+    if (data.session) {
+      setSuccess("Account created successfully! Redirecting...");
+      setLoading(false);
 
-    setTimeout(() => router.push("/students"), 1500);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      window.location.href = "/students";
+    } else {
+      setError("Login succeeded but no session was created");
+      setLoading(false);
+    }
   };
 
   return (

@@ -1,4 +1,5 @@
 import { getSupabaseServer } from "@/lib/supabase/server";
+import LogoutButton from "../components/logout";
 
 export default async function StudentsPage() {
   const supabase = await getSupabaseServer();
@@ -11,6 +12,7 @@ export default async function StudentsPage() {
     <div>
       <h1>Students</h1>
       <p>{user ? user.email : "Not logged in"}</p>
+      <LogoutButton />
     </div>
   );
 }

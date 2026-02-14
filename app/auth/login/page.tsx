@@ -1,12 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
-  const router = useRouter();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,25 +14,30 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    setSuccess(null);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const supabase = createClient();
+
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) {
       setError(error.message);
+      setLoading(false);
       setSuccess(null);
-      setLoading(false); // ✅ Reset loading state on error
       return;
     }
 
-    setSuccess("Logged in successfully! Redirecting...");
-    setLoading(false);
+    if (data.session) {
+      setSuccess("Login Successful");
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
-    // ✅ Added timeout duration
-    setTimeout(() => router.push("/students"), 1500);
+      window.location.href = "/students";
+    } else {
+      setError("Login succeeded but no session was created");
+      setLoading(false);
+    }
   };
 
   return (
