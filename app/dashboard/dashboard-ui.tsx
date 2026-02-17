@@ -8,9 +8,14 @@ import { ChatModal } from "../components/chat-room";
 interface DashboardUIProps {
   student: any;
   events: any;
+  userId: string;
 }
 
-export default function DashboardUI({ student, events }: DashboardUIProps) {
+export default function DashboardUI({
+  student,
+  events,
+  userId,
+}: DashboardUIProps) {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Get current date info
@@ -353,7 +358,11 @@ export default function DashboardUI({ student, events }: DashboardUIProps) {
           </div>
         </div>
       </main>
-      <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+      <ChatModal
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        userId={userId}
+      />
     </div>
   );
 }

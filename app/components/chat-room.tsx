@@ -1,20 +1,23 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { askGemini } from "../actions/ai";
 
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
+  outOfScope?: boolean;
 }
 
 interface ChatModalProps {
   isOpen: boolean;
   onClose: () => void;
+  userId: string;
 }
 
-export function ChatModal({ isOpen, onClose }: ChatModalProps) {
+export function ChatModal({ isOpen, onClose, userId }: ChatModalProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -60,20 +63,51 @@ export function ChatModal({ isOpen, onClose }: ChatModalProps) {
     setInputValue("");
     setIsLoading(true);
 
-    // Simulate AI response delay
-    setTimeout(() => {
+    try {
+      // 5. ✅ THIS IS THE CONNECTION - Call your server action!
+      // Send the message AND the userId (so it knows whose DB to check)
+      const response = await askGemini(newUserMessage.content, userId);
+
+      // 6. Create the AI's message object from the response
       const newAiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content:
-          "I'm a demo AI. In a real app, I would connect to an API to answer your question about: " +
-          inputValue,
+        content: response.message,
+        timestamp: new Date(),
+        outOfScope: response.outOfScope, // ← Was it out of scope?
+      };
+
+      // 7. Add AI's response to chat
+      setMessages((prev) => [...prev, newAiMessage]);
+    } catch (error) {
+      // If something goes wrong, show error message
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: "Sorry, something went wrong. Please try again." + error,
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, newAiMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      // 8. Hide loading (AI finished thinking)
       setIsLoading(false);
-    }, 1500);
+    }
   };
+
+  // Simulate AI response delay
+  //   setTimeout(() => {
+  //     const newAiMessage: Message = {
+  //       id: (Date.now() + 1).toString(),
+  //       role: "assistant",
+  //       content:
+  //         "I'm a demo AI. In a real app, I would connect to an API to answer your question about: " +
+  //         inputValue,
+  //       timestamp: new Date(),
+  //     };
+  //     setMessages((prev) => [...prev, newAiMessage]);
+  //     setIsLoading(false);
+  //   }, 1500);
+  // };
 
   if (!isOpen) return null;
 

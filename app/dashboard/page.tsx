@@ -35,5 +35,11 @@ export default async function DashboardPage() {
     .select("*")
     .order("event_date", { ascending: true });
 
-  return <DashboardUI student={student || {}} events={events || []} />;
+  return (
+    <DashboardUI
+      student={student || {}}
+      events={events || []}
+      userId={user.id}
+    />
+  );
 }
