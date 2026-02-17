@@ -3,7 +3,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getSupabaseServer } from "@/lib/supabase/server";
 
-// Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 // Helper function to calculate time until an event
@@ -33,27 +32,21 @@ function getTimeUntil(eventDate: string): string {
   }
 }
 
-// Main RAG function
 export async function askGemini(message: string, userId: string) {
   try {
-    console.log("🔍 Processing query:", message);
-
     const supabase = await getSupabaseServer();
 
-    // Step 1: Get student profile
     const { data: student } = await supabase
       .from("students")
       .select("*")
       .eq("id", userId)
       .single();
 
-    // Step 2: Get all academic events
     const { data: events } = await supabase
       .from("academic_events")
       .select("*")
       .order("event_date", { ascending: true });
 
-    // Step 3: Check if query is in scope
     const scopeCheckModel = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
     });
@@ -66,6 +59,7 @@ The assistant can ONLY answer questions about:
 - Schedule and calendar
 - Upcoming events and dates
 - Study tips or academic advice
+- Greetings e.g if a user sends "hello" you can respond with something like "hello 'student_name' how are you doing today, what aspect of your studies can i help you with". Just be crative with it
 
 The assistant CANNOT answer:
 - General knowledge questions
@@ -83,9 +77,6 @@ Your response:`;
     const scopeResult = await scopeCheckModel.generateContent(scopeCheckPrompt);
     const scopeDecision = scopeResult.response.text().trim().toUpperCase();
 
-    console.log("📊 Scope decision:", scopeDecision);
-
-    // If out of scope, return redirect message
     if (scopeDecision.includes("OUT_OF_SCOPE")) {
       return {
         success: true,
@@ -95,7 +86,6 @@ Your response:`;
       };
     }
 
-    // Step 4: Build context from database
     let databaseContext = `STUDENT INFORMATION:
 - Name: ${student?.full_name}
 - Department: ${student?.department}
@@ -128,7 +118,6 @@ ACADEMIC EVENTS:`;
       databaseContext += "\nNo upcoming events scheduled.";
     }
 
-    // Step 5: Generate response with context
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `You are a helpful academic assistant with access to a student's database.
@@ -157,8 +146,6 @@ Provide a helpful, conversational response:`;
 
     const result = await model.generateContent(prompt);
     const response = result.response.text();
-
-    console.log("✅ Generated response");
 
     return {
       success: true,

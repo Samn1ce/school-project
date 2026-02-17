@@ -36,7 +36,6 @@ export default function DashboardUI({
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 font-sans selection:bg-green-100 selection:text-green-900">
-      {/* Sticky Glass Header */}
       <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-zinc-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16">
           <div className="flex justify-between items-center h-full">
@@ -66,11 +65,8 @@ export default function DashboardUI({
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        {/* Welcome Section - Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Main Welcome Card */}
           <div className="lg:col-span-8 bg-white rounded-2xl border border-zinc-200 p-8 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] relative overflow-hidden group">
-            {/* Decorative Background Element */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-green-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-50 pointer-events-none group-hover:opacity-100 transition-opacity duration-700" />
 
             <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start md:items-center">
@@ -104,7 +100,6 @@ export default function DashboardUI({
             </div>
           </div>
 
-          {/* Quick Stats / Status Card */}
           <div className="lg:col-span-4 bg-zinc-900 rounded-2xl p-8 text-white relative overflow-hidden flex flex-col justify-between shadow-xl shadow-zinc-900/10">
             <div className="absolute top-0 right-0 w-64 h-64 bg-green-500 rounded-full blur-[80px] -mr-16 -mt-32 opacity-20" />
 
@@ -132,9 +127,7 @@ export default function DashboardUI({
           </div>
         </div>
 
-        {/* Dashboard Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column: Events (2/3 width) */}
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-bold text-zinc-900 flex items-center gap-2">
@@ -153,7 +146,6 @@ export default function DashboardUI({
                     key={event.id}
                     className="group bg-white rounded-xl p-5 border border-zinc-200 hover:border-green-500 hover:ring-1 hover:ring-green-500 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row gap-5 items-start sm:items-center"
                   >
-                    {/* Date Block */}
                     <div className="shrink-0 w-16 h-16 bg-zinc-50 rounded-xl border border-zinc-100 flex flex-col items-center justify-center text-center group-hover:bg-green-50 group-hover:border-green-100 transition-colors">
                       <span className="text-xs font-bold text-zinc-500 uppercase group-hover:text-green-600">
                         {new Date(event.event_date).toLocaleDateString(
@@ -254,7 +246,6 @@ export default function DashboardUI({
             )}
           </div>
 
-          {/* Right Column: Quick Actions (1/3 width) */}
           <div className="space-y-6">
             <h3 className="text-xl font-bold text-zinc-900 flex items-center gap-2">
               <span className="w-1.5 h-6 bg-zinc-900 rounded-full"></span>
@@ -262,7 +253,6 @@ export default function DashboardUI({
             </h3>
 
             <div className="grid grid-cols-1 gap-4">
-              {/* Chat Card */}
               <button
                 onClick={() => setIsChatOpen(true)}
                 className="group relative w-full text-left bg-linear-to-br from-green-600 to-emerald-700 rounded-2xl p-6 text-white shadow-lg shadow-green-600/20 overflow-hidden hover:scale-[1.02] transition-transform duration-300"
@@ -299,7 +289,6 @@ export default function DashboardUI({
                 </div>
               </button>
 
-              {/* Resources Card */}
               <button className="group w-full text-left bg-white rounded-2xl p-6 border border-zinc-200 hover:border-zinc-300 shadow-sm hover:shadow-md transition-all duration-300">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-zinc-50 rounded-xl flex items-center justify-center border border-zinc-100 group-hover:bg-zinc-100 transition-colors">
@@ -328,7 +317,6 @@ export default function DashboardUI({
                 </div>
               </button>
 
-              {/* Assignments Card */}
               <button className="group w-full text-left bg-white rounded-2xl p-6 border border-zinc-200 hover:border-zinc-300 shadow-sm hover:shadow-md transition-all duration-300">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-zinc-50 rounded-xl flex items-center justify-center border border-zinc-100 group-hover:bg-zinc-100 transition-colors">

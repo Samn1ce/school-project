@@ -4,7 +4,6 @@ import DashboardUI from "./dashboard-ui";
 export default async function DashboardPage() {
   const supabase = await getSupabaseServer();
 
-  // Get logged-in user
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -22,14 +21,12 @@ export default async function DashboardPage() {
     );
   }
 
-  // Fetch student profile
   const { data: student } = await supabase
     .from("students")
     .select("*")
     .eq("id", user.id)
     .single();
 
-  // Fetch academic events
   const { data: events } = await supabase
     .from("academic_events")
     .select("*")
