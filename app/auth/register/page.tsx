@@ -58,7 +58,7 @@ export default function RegisterPage() {
       setSuccess("Account created successfully! Redirecting...");
       setLoading(false);
       await new Promise((resolve) => setTimeout(resolve, 100));
-      window.location.href = "/dashboard";
+      window.location.href = "/waitingScreen";
     } else {
       setError("Login succeeded but no session was created");
       setLoading(false);

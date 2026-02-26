@@ -31,8 +31,17 @@ export default function LoginPage() {
 
     if (data.session) {
       setSuccess("Login Successful");
+      const { data: student } = await supabase
+        .from("students")
+        .select("is_new_user")
+        .eq("id", data.user.id)
+        .single();
       await new Promise((resolve) => setTimeout(resolve, 100));
-      window.location.href = "/dashboard";
+      if (student?.is_new_user) {
+        window.location.href = "/waitingScreen";
+      } else {
+        window.location.href = "/dashboard";
+      }
     } else {
       setError("Login succeeded but no session was created");
       setLoading(false);
